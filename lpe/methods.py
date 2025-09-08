@@ -259,18 +259,32 @@ def MHIS(
     Returns:
     - The estimated probability of outputing token `target`.
     """
+
+    # d_vocab is the vocabulary size  
     d_vocab = model.embed.d_vocab
+    # context length takes the length of the input distributions
     ctx_len = len(orig_dists)
+    # initialize score vector to be all 0s, with one column for each vocabulary token
     scores = th.zeros((ctx_len, d_vocab), device=model.device)
 
     for param in model.parameters():
         param.requires_grad_(False)
 
+    # compute log probabilities of original distributions, which we use for our baseline distribution p(x)
+    # this ensures that only valid tokens have a nonnegative probability at each position 
     orig_log_probs = []
+    # iterate over each position in the original list of distributions
     for pos in range(ctx_len):
+
+        # create a mask with same size as vocabulary, initialize to -inf 
         mask = -th.inf * th.ones(d_vocab, device=model.device)
+        # valid tokens = orig_dists[pos].values
+        # get the log probabilities of valid tokens (RHS)
+        # using mask ensures that the probabilities of invalid tokens is -inf 
         mask[orig_dists[pos].values] = th.log(orig_dists[pos].probs)
         orig_log_probs.append(mask)
+
+    # stack the log probabilities into a tensor with shape (ctx_len, d_vocab)
     orig_log_probs = th.stack(orig_log_probs)
 
     for param in model.parameters():
