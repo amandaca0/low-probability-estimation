@@ -26,8 +26,9 @@ This file defines and allows us to edit neural network components (re-implementi
 
 1. Embed: maps token IDs (integers) into embedding vectors
 - d_model is the dimension of the model, which dictates the size of each token's vector representation
-- W_E is the embedding matrix that has shape [vocab_size, d_model]
-- vocab_size is the number of distinct tokens in the vocabulary
+- d_vocab is the size/dimension of the vocabulary, specifying the number of unique tokens the model can handle 
+- W_E is the embedding matrix that has shape [d_vocab, d_model]
+- d_vocab is the number of distinct tokens in the vocabulary
 - Each row of W_E is a vector representation of a token in the vocab
 2. Unembed: takes model states back into logits for prediction of next token
 3. FinalSoftmax: converting logits to probabilities based on temperature
